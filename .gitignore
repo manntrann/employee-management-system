@@ -427,3 +427,11 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+/EmployeeManagement.API/EmployeeManagement.API.sln
+/EmployeeManagement.API/Migrations/20260521095309_InitialCreate.cs
+/EmployeeManagement.API/Migrations/20260521095309_InitialCreate.Designer.cs
+/EmployeeManagement.API/Migrations/20260521110710_UpdateEmployee.cs
+/EmployeeManagement.API/Migrations/20260521110710_UpdateEmployee.Designer.cs
+/EmployeeManagement.API/Migrations/20260521111735_InitialCreateDatabase.cs
+/EmployeeManagement.API/Migrations/20260521111735_InitialCreateDatabase.Designer.cs
+/EmployeeManagement.API/Migrations/AppDbContextModelSnapshot.cs

@@ -8,11 +8,14 @@ namespace EmployeeManagement.API.Models
 
         [Required]
         public string Name { get; set; }
-
         public string Email { get; set; }
-
         public string Position { get; set; }
-
         public decimal Salary { get; set; }
+        public string Phone { get; set; }
+
+        public int DepartmentId { get; set; }
+        public Department Department { get; set; }
+
+        public DateTime CreatedAt { get; set; }
     }
 }
