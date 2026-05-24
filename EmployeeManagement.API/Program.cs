@@ -1,4 +1,5 @@
 using EmployeeManagement.API.Data;
+using EmployeeManagement.API.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<EmployeeService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
