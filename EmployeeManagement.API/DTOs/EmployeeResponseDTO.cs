@@ -1,12 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace EmployeeManagement.API.Models
+﻿namespace EmployeeManagement.API.DTOs
 {
-    public class Employee
+    public class EmployeeResponseDTO
     {
         public int Id { get; set; }
 
-        [Required]
         public string FullName { get; set; }
 
         public string? Email { get; set; }
@@ -17,9 +14,7 @@ namespace EmployeeManagement.API.Models
 
         public string? Phone { get; set; }
 
-        public int DepartmentId { get; set; }
-
-        public Department? Department { get; set; }
+        public string DepartmentName { get; set; }
 
         public DateTime CreatedAt { get; set; }
     }

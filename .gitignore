@@ -435,3 +435,4 @@ FodyWeavers.xsd
 /EmployeeManagement.API/Migrations/20260521111735_InitialCreateDatabase.cs
 /EmployeeManagement.API/Migrations/20260521111735_InitialCreateDatabase.Designer.cs
 /EmployeeManagement.API/Migrations/AppDbContextModelSnapshot.cs
+/EmployeeManagement.API/Migrations
