@@ -1,11 +1,12 @@
 ﻿using EmployeeManagement.API.Data;
-using EmployeeManagement.API.DTOs;
+using EmployeeManagement.API.DTOs.EmployeeDTO;
 using EmployeeManagement.API.Models;
+using EmployeeManagement.API.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace EmployeeManagement.API.Services
 {
-    public class EmployeeService
+    public class EmployeeService : IEmployeeService
     {
         private readonly AppDbContext _context;
 
@@ -14,23 +15,39 @@ namespace EmployeeManagement.API.Services
             _context = context;
         }
 
-        public async Task<List<EmployeeResponseDTO>> GetAll()
+        public async Task<object> GetAll(int page, int pageSize, string? search)
         {
-            return await _context.Employees
-            .Include(x => x.Department)
-            .Select(x => new EmployeeResponseDTO
-            {
-                Id = x.Id,
-                FullName = x.FullName,
-                Email = x.Email,
-                Position = x.Position,
-                Salary = x.Salary,
-                Phone = x.Phone,
-                DepartmentName = x.Department.Name,
-                CreatedAt = x.CreatedAt
-            })
-            .ToListAsync();
+            var query = _context.Employees
+               .Include(x => x.Department)
+               .AsNoTracking()
+               .AsQueryable();
 
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                query = query.Where(x =>
+                    x.FullName.Contains(search) ||
+                    x.Email.Contains(search));
+            }
+
+            var total = await query.CountAsync();
+
+            var data = await query
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+               .Select(x => new EmployeeResponseDTO
+               {
+                   Id = x.Id,
+                   FullName = x.FullName,
+                   Email = x.Email,
+                   Position = x.Position,
+                   Salary = x.Salary,
+                   Phone = x.Phone,
+                   DepartmentName = x.Department.Name,
+                   CreatedAt = x.CreatedAt
+               })
+                .ToListAsync();
+
+            return new { total, page, pageSize, data };
         }
 
         public async Task<EmployeeResponseDTO?> GetById(int id)

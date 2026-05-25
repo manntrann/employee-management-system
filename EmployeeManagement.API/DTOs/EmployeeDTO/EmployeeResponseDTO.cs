@@ -1,4 +1,4 @@
-﻿namespace EmployeeManagement.API.DTOs
+﻿namespace EmployeeManagement.API.DTOs.EmployeeDTO
 {
     public class EmployeeResponseDTO
     {

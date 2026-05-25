@@ -7,7 +7,7 @@ namespace EmployeeManagement.API.Models
         public int Id { get; set; }
 
         [Required]
-        public string FullName { get; set; }
+        public string FullName { get; set; } = string.Empty;
 
         public string? Email { get; set; }
 
@@ -19,7 +19,7 @@ namespace EmployeeManagement.API.Models
 
         public int DepartmentId { get; set; }
 
-        public Department? Department { get; set; }
+        public Department Department { get; set; } = null!;
 
         public DateTime CreatedAt { get; set; }
     }

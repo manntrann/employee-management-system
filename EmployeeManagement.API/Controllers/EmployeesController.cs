@@ -1,8 +1,6 @@
-﻿using EmployeeManagement.API.DTOs;
-using EmployeeManagement.API.Models;
-using EmployeeManagement.API.Services;
+﻿using EmployeeManagement.API.DTOs.EmployeeDTO;
+using EmployeeManagement.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace EmployeeManagement.API.Controllers
 {
@@ -10,17 +8,17 @@ namespace EmployeeManagement.API.Controllers
     [Route("api/[Controller]")]
     public class EmployeesController : Controller
     {
-        private readonly EmployeeService _service;
+        private readonly IEmployeeService _employeeService;
 
-        public EmployeesController(EmployeeService service)
+        public EmployeesController(IEmployeeService employeeService)
         {
-            _service = service;
+            _employeeService = employeeService;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllEmployees()
+        public async Task<IActionResult> GetAllEmployees(int page, int pageSize, string? search)
         {
-            var employees = await _service.GetAll();
+            var employees = await _employeeService.GetAll(page, pageSize, search);
 
             return Ok(employees);
         }
@@ -28,7 +26,7 @@ namespace EmployeeManagement.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetEmployeeById( int id )
         {
-            var employee = await _service.GetById( id );
+            var employee = await _employeeService.GetById( id );
 
             if(employee == null)
             {
@@ -40,7 +38,7 @@ namespace EmployeeManagement.API.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateEmployee(EmployeeDTO dto)
         {
-            var employee = await _service.Create( dto );
+            var employee = await _employeeService.Create( dto );
 
             if (employee == null)
             {
@@ -56,7 +54,7 @@ namespace EmployeeManagement.API.Controllers
         [HttpPut]
         public async Task<IActionResult> UpdateEmployee (int id, EmployeeDTO dto)
         {
-            var updated  = await _service.Update( id, dto );
+            var updated  = await _employeeService.Update( id, dto );
 
             if (!updated)
             {
@@ -70,7 +68,7 @@ namespace EmployeeManagement.API.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeleteEmployee(int id)
         {
-            var deleted = await _service.Delete( id );
+            var deleted = await _employeeService.Delete( id );
 
             if(!deleted)
             {
