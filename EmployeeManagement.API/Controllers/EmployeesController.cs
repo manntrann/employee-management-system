@@ -1,9 +1,11 @@
 ﻿using EmployeeManagement.API.DTOs.EmployeeDTO;
 using EmployeeManagement.API.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EmployeeManagement.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[Controller]")]
     public class EmployeesController : Controller

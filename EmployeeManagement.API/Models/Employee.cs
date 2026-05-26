@@ -22,5 +22,9 @@ namespace EmployeeManagement.API.Models
         public Department Department { get; set; } = null!;
 
         public DateTime CreatedAt { get; set; }
+
+        public int UserId { get; set; }
+
+        public User User { get; set; }
     }
 }
