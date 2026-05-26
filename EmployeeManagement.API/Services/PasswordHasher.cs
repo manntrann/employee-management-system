@@ -14,12 +14,20 @@ namespace EmployeeManagement.API.Services
 
         public bool Verify(string password, string passwordHash)
         {
-            var result = _passwordHasher.VerifyHashedPassword(
-                new object(),
-                passwordHash,
-                password);
-            return result == PasswordVerificationResult.Success ||
-                result == PasswordVerificationResult.SuccessRehashNeeded;
+            try
+            {
+                var result = _passwordHasher.VerifyHashedPassword(
+                    new object(),
+                    passwordHash,
+                    password);
+
+                return result == PasswordVerificationResult.Success ||
+                       result == PasswordVerificationResult.SuccessRehashNeeded;
+            }
+            catch (FormatException)
+            {
+                return false;
+            }
         }
     }
 }

@@ -79,11 +79,13 @@ namespace EmployeeManagement.API.Services
                 Salary = dto.Salary,
                 Phone = dto.Phone,
                 DepartmentId = dto.DepartmentId,
+                UserId = dto.UserId,
                 CreatedAt = DateTime.UtcNow
             };
             var departmentExists = await _context.Departments.AnyAsync(x => x.Id == dto.DepartmentId);
+            var userExits = await _context.Users.AnyAsync(x => x.Id == dto.UserId);
 
-            if (!departmentExists)
+            if (!departmentExists || !userExits)
             {
                 return null;
             }
@@ -101,8 +103,9 @@ namespace EmployeeManagement.API.Services
             if (employee == null)
                 return false;
             var departmentExists = await _context.Departments.AnyAsync(x => x.Id == dto.DepartmentId);
+            var userExits = await _context.Users.AnyAsync(x => x.Id == dto.UserId);
 
-            if (!departmentExists)
+            if (!departmentExists || !userExits)
             {
                 return false;
             }
@@ -112,6 +115,7 @@ namespace EmployeeManagement.API.Services
             employee.Salary = dto.Salary;
             employee.Phone = dto.Phone;
             employee.DepartmentId = dto.DepartmentId;
+            employee.UserId = dto.UserId;
 
             await _context.SaveChangesAsync();
 
