@@ -9,6 +9,7 @@ namespace EmployeeManagement.API.Services
     {
         private readonly AppDbContext _context;
         private readonly IJwtService _jwtService;
+        private readonly IPasswordHasher _passwordHasher;
 
         public AuthService(AppDbContext context, IJwtService jwtService)
         {
@@ -20,10 +21,9 @@ namespace EmployeeManagement.API.Services
         {
             var user = await _context.Users
                 .FirstOrDefaultAsync(x =>
-                    (x.Username != null && x.Username == request.UserName) &&
-                    x.PasswordHash == request.Password);
+                    x.Username != null && x.Username == request.UserName);
 
-            if (user == null)
+            if (user == null || !_passwordHasher.Verify(request.Password, user.PasswordHash))
             {
                 return null;
             }
