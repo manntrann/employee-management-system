@@ -16,5 +16,7 @@ namespace EmployeeManagement.API.DTOs.EmployeeDTO
         public string? Phone { get; set; }   
 
         public int DepartmentId { get; set; }
+
+        public int UserId { get; set; }
     }
 }

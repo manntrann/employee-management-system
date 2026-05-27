@@ -1,9 +1,12 @@
-﻿using EmployeeManagement.API.DTOs.DepartmentDTO;
+using EmployeeManagement.API.DTOs.DepartmentDTO;
 using EmployeeManagement.API.Services.Interfaces;
+using EmployeeManagement.API.Services.Results;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EmployeeManagement.API.Controllers
 {
+    [Authorize(Roles = "Admin")]
     [ApiController]
     [Route("api/departments")]
     public class DepartmentsController : ControllerBase
@@ -23,12 +26,59 @@ namespace EmployeeManagement.API.Controllers
             return Ok(departments);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> Create(DepartmentDTO dto) {
-            var result = await _departmentService.Create(dto);
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var department = await _departmentService.GetById(id);
 
-            return Ok(result);
+            if (department == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(department);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Create(DepartmentDTO dto)
+        {
+            var result = await _departmentService.Create(dto);
+
+            return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, DepartmentDTO dto)
+        {
+            var updated = await _departmentService.Update(id, dto);
+
+            if (!updated)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var result = await _departmentService.Delete(id);
+
+            if (result == DepartmentDeleteResult.NotFound)
+            {
+                return NotFound();
+            }
+
+            if (result == DepartmentDeleteResult.HasEmployees)
+            {
+                return Conflict(new
+                {
+                    message = "Cannot delete department because it still has employees. Move or delete those employees first."
+                });
+            }
+
+            return NoContent();
+        }
     }
 }

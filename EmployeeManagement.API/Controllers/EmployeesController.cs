@@ -44,7 +44,7 @@ namespace EmployeeManagement.API.Controllers
 
             if (employee == null)
             {
-                return NotFound("Department not found.");
+                return NotFound();
             }   
 
             return CreatedAtAction(

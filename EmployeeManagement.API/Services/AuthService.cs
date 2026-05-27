@@ -11,10 +11,11 @@ namespace EmployeeManagement.API.Services
         private readonly IJwtService _jwtService;
         private readonly IPasswordHasher _passwordHasher;
 
-        public AuthService(AppDbContext context, IJwtService jwtService)
+        public AuthService(AppDbContext context, IJwtService jwtService, IPasswordHasher passwordHasher)
         {
             _context = context;
             _jwtService = jwtService;
+            _passwordHasher = passwordHasher;
         }
 
         public async Task<string> LoginAsync(LoginDTO request)
