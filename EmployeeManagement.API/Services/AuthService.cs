@@ -18,11 +18,11 @@ namespace EmployeeManagement.API.Services
             _passwordHasher = passwordHasher;
         }
 
-        public async Task<string> LoginAsync(LoginDTO request)
+        public async Task<string?> LoginAsync(LoginDTO request)
         {
             var user = await _context.Users
                 .FirstOrDefaultAsync(x =>
-                    x.Username != null && x.Username == request.UserName);
+                    x.Email != null && x.Email == request.Email);
 
             if (user == null || !_passwordHasher.Verify(request.Password, user.PasswordHash))
             {
@@ -31,7 +31,7 @@ namespace EmployeeManagement.API.Services
 
             return _jwtService.GenerateToken(
                 user.Id,
-                user.Username,
+                user.Email,
                 user.Role
             );
         }

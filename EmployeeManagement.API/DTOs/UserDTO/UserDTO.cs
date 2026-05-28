@@ -1,13 +1,23 @@
-﻿namespace EmployeeManagement.API.DTOs.UserDTO
+using System.ComponentModel.DataAnnotations;
+
+namespace EmployeeManagement.API.DTOs.UserDTO
 {
     public class UserDTO
     {
-        public string Username { get; set; }
+        [Required]
+        [StringLength(100)]
+        public string Username { get; set; } = string.Empty;
 
-        public string Email { get; set; }
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; } = string.Empty;
 
-        public string Password { get; set; }
+        [Required]
+        [MinLength(6)]
+        public string Password { get; set; } = string.Empty;
 
-        public string Role { get; set; }
+        [Required]
+        [StringLength(50)]
+        public string Role { get; set; } = string.Empty;
     }
 }

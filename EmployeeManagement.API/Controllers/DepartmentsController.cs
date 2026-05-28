@@ -1,3 +1,4 @@
+using EmployeeManagement.API.DTOs.Common;
 using EmployeeManagement.API.DTOs.DepartmentDTO;
 using EmployeeManagement.API.Services.Interfaces;
 using EmployeeManagement.API.Services.Results;
@@ -33,7 +34,7 @@ namespace EmployeeManagement.API.Controllers
 
             if (department == null)
             {
-                return NotFound();
+                return NotFound(new ErrorResponseDTO { Message = "Department not found." });
             }
 
             return Ok(department);
@@ -54,7 +55,7 @@ namespace EmployeeManagement.API.Controllers
 
             if (!updated)
             {
-                return NotFound();
+                return NotFound(new ErrorResponseDTO { Message = "Department not found." });
             }
 
             return NoContent();
@@ -67,14 +68,14 @@ namespace EmployeeManagement.API.Controllers
 
             if (result == DepartmentDeleteResult.NotFound)
             {
-                return NotFound();
+                return NotFound(new ErrorResponseDTO { Message = "Department not found." });
             }
 
             if (result == DepartmentDeleteResult.HasEmployees)
             {
-                return Conflict(new
+                return Conflict(new ErrorResponseDTO
                 {
-                    message = "Cannot delete department because it still has employees. Move or delete those employees first."
+                    Message = "Cannot delete department because it still has employees. Move or delete those employees first."
                 });
             }
 

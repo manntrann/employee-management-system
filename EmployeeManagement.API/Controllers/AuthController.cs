@@ -1,8 +1,7 @@
-﻿using EmployeeManagement.API.DTOs.LoginDTO;
+using EmployeeManagement.API.DTOs.Common;
+using EmployeeManagement.API.DTOs.LoginDTO;
 using EmployeeManagement.API.Services.Interfaces;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace EmployeeManagement.API.Controllers
 {
@@ -24,9 +23,9 @@ namespace EmployeeManagement.API.Controllers
 
             if (token == null)
             {
-                return Unauthorized(new
+                return Unauthorized(new ErrorResponseDTO
                 {
-                    message = "Invalid username or password"
+                    Message = "Invalid email or password."
                 });
             }
 
