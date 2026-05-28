@@ -1,9 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace EmployeeManagement.API.DTOs.DepartmentDTO
 {
     public class DepartmentDTO
     {
-        public string Name { get; set; }
+        [Required]
+        [StringLength(100)]
+        public string Name { get; set; } = string.Empty;
     }
 }

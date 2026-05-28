@@ -17,6 +17,14 @@ namespace EmployeeManagement.API.Services
 
         public async Task<object> GetAll(int page, int pageSize, string? search)
         {
+            const int defaultPage = 1;
+            const int defaultPageSize = 10;
+            const int maxPageSize = 100;
+
+            page = page <= 0 ? defaultPage : page;
+            pageSize = pageSize <= 0 ? defaultPageSize : pageSize;
+            pageSize = Math.Min(pageSize, maxPageSize);
+
             var query = _context.Employees
                .Include(x => x.Department)
                .AsNoTracking()
@@ -26,12 +34,14 @@ namespace EmployeeManagement.API.Services
             {
                 query = query.Where(x =>
                     x.FullName.Contains(search) ||
-                    x.Email.Contains(search));
+                    (x.Email != null && x.Email.Contains(search)));
             }
 
             var total = await query.CountAsync();
 
             var data = await query
+                .OrderByDescending(x => x.CreatedAt)
+                .ThenByDescending(x => x.Id)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                .Select(x => new EmployeeResponseDTO
@@ -69,7 +79,7 @@ namespace EmployeeManagement.API.Services
             .FirstOrDefaultAsync();
         }
 
-        public async Task<Employee> Create(EmployeeDTO dto)
+        public async Task<Employee?> Create(EmployeeDTO dto)
         {
             var employee = new Employee
             {

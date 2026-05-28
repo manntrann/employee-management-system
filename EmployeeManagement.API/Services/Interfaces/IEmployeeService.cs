@@ -9,7 +9,7 @@ namespace EmployeeManagement.API.Services.Interfaces
 
         Task<EmployeeResponseDTO?> GetById(int id);
 
-        Task<Employee> Create(EmployeeDTO dto);
+        Task<Employee?> Create(EmployeeDTO dto);
 
         Task<bool> Update(int id, EmployeeDTO dto);
 

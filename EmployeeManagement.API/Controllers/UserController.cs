@@ -1,3 +1,4 @@
+using EmployeeManagement.API.DTOs.Common;
 using EmployeeManagement.API.DTOs.UserDTO;
 using EmployeeManagement.API.Services.Interfaces;
 using EmployeeManagement.API.Services.Results;
@@ -33,7 +34,7 @@ namespace EmployeeManagement.API.Controllers
 
             if (user == null)
             {
-                return NotFound();
+                return NotFound(new ErrorResponseDTO { Message = "User not found." });
             }
 
             return Ok(user);
@@ -54,7 +55,7 @@ namespace EmployeeManagement.API.Controllers
 
             if (!updated)
             {
-                return NotFound();
+                return NotFound(new ErrorResponseDTO { Message = "User not found." });
             }
 
             return NoContent();
@@ -67,14 +68,14 @@ namespace EmployeeManagement.API.Controllers
 
             if (result == UserDeleteResult.NotFound)
             {
-                return NotFound();
+                return NotFound(new ErrorResponseDTO { Message = "User not found." });
             }
 
             if (result == UserDeleteResult.HasEmployees)
             {
-                return Conflict(new
+                return Conflict(new ErrorResponseDTO
                 {
-                    message = "Cannot delete user because employees are still assigned to this user. Reassign or delete those employees first."
+                    Message = "Cannot delete user because employees are still assigned to this user. Reassign or delete those employees first."
                 });
             }
 
