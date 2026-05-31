@@ -35,6 +35,7 @@ builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ILeaveRequestService, LeaveRequestService>();
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -94,7 +95,7 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    await DbSeeder.SeedAdminAsync(app.Services);
+    await DbSeeder.SeedDevelopmentDataAsync(app.Services);
 }
 
 // Configure the HTTP request pipeline.
