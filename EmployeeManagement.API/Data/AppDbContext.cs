@@ -13,5 +13,15 @@ namespace EmployeeManagement.API.Data
         public DbSet<User> Users { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Department> Departments { get; set; }
+        public DbSet<LeaveRequest> LeaveRequests { get; set; }
+
+        public DbSet<LeaveBalance> LeaveBalances { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<LeaveBalance>()
+                .HasIndex(x => new { x.EmployeeId, x.Year })
+                .IsUnique();
+        }
     }
 }
