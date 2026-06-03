@@ -1,6 +1,78 @@
-@EmployeeManagement.API_HostAddress = http://localhost:5230
+@EmployeeManagement.API_HostAddress = https://localhost:7120
+@token = paste-jwt-token-here
 
-GET {{EmployeeManagement.API_HostAddress}}/weatherforecast/
-Accept: application/json
+### Login as admin
+POST {{EmployeeManagement.API_HostAddress}}/api/auth/login
+Content-Type: application/json
 
-###
+{
+  "email": "admin@example.com",
+  "password": "Admin123!"
+}
+
+### Login as employee
+POST {{EmployeeManagement.API_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "employee@example.com",
+  "password": "Employee123!"
+}
+
+### Get employees
+GET {{EmployeeManagement.API_HostAddress}}/api/employees?page=1&pageSize=10&search=test
+Authorization: Bearer {{token}}
+
+### Get departments - admin only
+GET {{EmployeeManagement.API_HostAddress}}/api/departments
+Authorization: Bearer {{token}}
+
+### Get users - admin only
+GET {{EmployeeManagement.API_HostAddress}}/api/users
+Authorization: Bearer {{token}}
+
+### Create leave request - employee
+POST {{EmployeeManagement.API_HostAddress}}/api/leave-requests
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "leaveType": 0,
+  "startDate": "2026-07-01",
+  "endDate": "2026-07-02",
+  "reason": "Vacation"
+}
+
+### Get my leave requests
+GET {{EmployeeManagement.API_HostAddress}}/api/leave-requests/mine
+Authorization: Bearer {{token}}
+
+### Get my leave balance
+GET {{EmployeeManagement.API_HostAddress}}/api/leave-requests/balance
+Authorization: Bearer {{token}}
+
+### Get all leave requests - admin or manager
+GET {{EmployeeManagement.API_HostAddress}}/api/leave-requests
+Authorization: Bearer {{token}}
+
+### Approve leave request - admin or manager
+POST {{EmployeeManagement.API_HostAddress}}/api/leave-requests/1/approve
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "note": "Approved"
+}
+
+### Reject leave request - admin or manager
+POST {{EmployeeManagement.API_HostAddress}}/api/leave-requests/1/reject
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "note": "Rejected"
+}
+
+### Cancel my pending leave request
+POST {{EmployeeManagement.API_HostAddress}}/api/leave-requests/1/cancel
+Authorization: Bearer {{token}}
