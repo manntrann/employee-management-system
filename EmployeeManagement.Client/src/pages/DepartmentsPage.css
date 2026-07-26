@@ -1,0 +1,34 @@
+.department-list {
+  display: grid;
+  gap: 10px;
+}
+
+.department-row {
+  display: flex;
+  align-items: center;
+}
+
+.department-row {
+  justify-content: space-between;
+  gap: 16px;
+  border: 1px solid #eaecf0;
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.department-row h3 {
+  margin: 0 0 4px;
+  color: #101828;
+}
+
+.department-row p {
+  margin: 0;
+  color: #667085;
+}
+
+@media (max-width: 720px) {
+  .department-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

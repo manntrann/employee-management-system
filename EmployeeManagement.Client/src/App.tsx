@@ -5,6 +5,8 @@ import { useApi } from './hooks/useApi'
 import { useSession } from './hooks/useSession'
 import { DashboardLayout } from './layouts/DashboardLayout'
 import { DashboardPage } from './pages/DashboardPage'
+import { DepartmentDetailPage } from './pages/DepartmentDetailPage'
+import { DepartmentsPage } from './pages/DepartmentsPage'
 import { EmployeesPage } from './pages/EmployeesPage'
 import { LoginPage } from './pages/LoginPage'
 import type { Toast } from './types/toast'
@@ -42,6 +44,8 @@ function App() {
                   <Route index element={<Navigate to="/dashboard" replace />} />
                   <Route path="dashboard" element={<DashboardPage />} />
                   <Route path="employees" element={<EmployeesPage api={api} session={session} notify={notify} />} />
+                  <Route path="departments" element={<DepartmentsPage api={api} session={session} notify={notify} />} />
+                  <Route path="departments/:id" element={<DepartmentDetailPage api={api} session={session} />} />
                   <Route path="*" element={<Navigate to="/dashboard" replace />} />
                 </Routes>
               </DashboardLayout>

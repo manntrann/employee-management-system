@@ -1,0 +1,20 @@
+.detail-back {
+  margin-bottom: 12px;
+}
+
+.department-detail-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.department-detail-summary strong {
+  color: #101828;
+}
+
+.department-detail-summary span {
+  color: #667085;
+  font-weight: 800;
+}
