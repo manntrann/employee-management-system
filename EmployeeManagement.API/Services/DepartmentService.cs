@@ -31,7 +31,11 @@ namespace EmployeeManagement.API.Services
                     Position = e.Position,
                     Salary = e.Salary,
                     Phone = e.Phone,
+                    DepartmentId = d.Id,
                     DepartmentName = d.Name,
+                    UserId = e.UserId,
+                    UserName = e.User.Username,
+                    Role = e.User.Role,
                     CreatedAt = e.CreatedAt
                 }).ToList()
 
@@ -55,7 +59,11 @@ namespace EmployeeManagement.API.Services
                         Position = e.Position,
                         Salary = e.Salary,
                         Phone = e.Phone,
+                        DepartmentId = d.Id,
                         DepartmentName = d.Name,
+                        UserId = e.UserId,
+                        UserName = e.User.Username,
+                        Role = e.User.Role,
                         CreatedAt = e.CreatedAt
                     }).ToList()
                 })
