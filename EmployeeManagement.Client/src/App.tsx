@@ -8,6 +8,7 @@ import { DashboardPage } from './pages/DashboardPage'
 import { DepartmentDetailPage } from './pages/DepartmentDetailPage'
 import { DepartmentsPage } from './pages/DepartmentsPage'
 import { EmployeesPage } from './pages/EmployeesPage'
+import { LeaveRequestsPage } from './pages/LeaveRequestsPage'
 import { LoginPage } from './pages/LoginPage'
 import { MyLeavePage } from './pages/MyLeavePage'
 import type { Toast } from './types/toast'
@@ -48,6 +49,7 @@ function App() {
                   <Route path="departments" element={<DepartmentsPage api={api} session={session} notify={notify} />} />
                   <Route path="departments/:id" element={<DepartmentDetailPage api={api} session={session} />} />
                   <Route path="my-leave" element={<MyLeavePage api={api} notify={notify} />} />
+                  <Route path="leave-requests" element={<LeaveRequestsPage api={api} session={session} notify={notify} />} />
                   <Route path="*" element={<Navigate to="/dashboard" replace />} />
                 </Routes>
               </DashboardLayout>

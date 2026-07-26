@@ -7,6 +7,8 @@ namespace EmployeeManagement.API.Services.Interfaces
     {
         Task<LeaveRequestCreateOutcome> CreateForUserAsync(int userId, LeaveRequestCreateDTO dto);
 
+        Task<LeaveRequestCreateOutcome> CreateForEmployeeAsync(int employeeId, LeaveRequestCreateDTO dto);
+
         Task<List<LeaveRequestResponseDTO>> GetMineAsync(int userId);
 
         Task<List<LeaveRequestResponseDTO>> GetAllAsync();
@@ -14,6 +16,8 @@ namespace EmployeeManagement.API.Services.Interfaces
         Task<LeaveBalanceResponseDTO?> GetBalanceForUserAsync(int userId);
 
         Task<LeaveRequestCancelResult> CancelMineAsync(int userId, int leaveRequestId);
+
+        Task<LeaveRequestCancelResult> CancelAsync(int leaveRequestId);
 
         Task<LeaveRequestReviewResult> ApproveAsync(int reviewerUserId, int leaveRequestId, string? note);
 

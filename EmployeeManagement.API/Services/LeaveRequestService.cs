@@ -35,18 +35,37 @@ namespace EmployeeManagement.API.Services
                 return LeaveRequestCreateOutcome.Fail(LeaveRequestCreateResult.NoEmployeeProfile);
             }
 
+            return await CreateForEmployeeAsync(employee.Id, dto);
+        }
+
+        public async Task<LeaveRequestCreateOutcome> CreateForEmployeeAsync(int employeeId, LeaveRequestCreateDTO dto)
+        {
+            if (dto.EndDate < dto.StartDate)
+            {
+                return LeaveRequestCreateOutcome.Fail(LeaveRequestCreateResult.InvalidDateRange);
+            }
+
+            var employeeExists = await _context.Employees
+                .AsNoTracking()
+                .AnyAsync(e => e.Id == employeeId);
+
+            if (!employeeExists)
+            {
+                return LeaveRequestCreateOutcome.Fail(LeaveRequestCreateResult.NoEmployeeProfile);
+            }
+
             var startDate = ToUtcDate(dto.StartDate);
             var endDate = ToUtcDate(dto.EndDate);
             var requestedDays = CalculateLeaveDays(dto.StartDate, dto.EndDate);
 
-            if (await HasOverlappingLeaveAsync(employee.Id, startDate, endDate))
+            if (await HasOverlappingLeaveAsync(employeeId, startDate, endDate))
             {
                 return LeaveRequestCreateOutcome.Fail(LeaveRequestCreateResult.OverlappingLeave);
             }
 
             if (dto.LeaveType != LeaveType.Unpaid)
             {
-                var balance = await GetOrCreateBalanceAsync(employee.Id, DateTime.UtcNow.Year);
+                var balance = await GetOrCreateBalanceAsync(employeeId, DateTime.UtcNow.Year);
                 if (!HasSufficientBalance(balance, dto.LeaveType, requestedDays))
                 {
                     return LeaveRequestCreateOutcome.Fail(LeaveRequestCreateResult.InsufficientBalance);
@@ -55,7 +74,7 @@ namespace EmployeeManagement.API.Services
 
             var entity = new LeaveRequest
             {
-                EmployeeId = employee.Id,
+                EmployeeId = employeeId,
                 LeaveType = dto.LeaveType,
                 StartDate = startDate,
                 EndDate = endDate,
@@ -85,6 +104,8 @@ namespace EmployeeManagement.API.Services
 
             var items = await _context.LeaveRequests
                 .AsNoTracking()
+                .Include(lr => lr.Employee)
+                .Include(lr => lr.ReviewedByUser)
                 .Where(lr => lr.EmployeeId == employeeId.Value)
                 .OrderByDescending(lr => lr.RequestedAt)
                 .ToListAsync();
@@ -96,6 +117,8 @@ namespace EmployeeManagement.API.Services
         {
             var items = await _context.LeaveRequests
                 .AsNoTracking()
+                .Include(lr => lr.Employee)
+                .Include(lr => lr.ReviewedByUser)
                 .OrderByDescending(lr => lr.RequestedAt)
                 .ToListAsync();
 
@@ -133,6 +156,27 @@ namespace EmployeeManagement.API.Services
             if (entity.Employee.UserId != userId)
             {
                 return LeaveRequestCancelResult.NotOwner;
+            }
+
+            if (entity.Status != LeaveRequestStatus.Pending)
+            {
+                return LeaveRequestCancelResult.NotPending;
+            }
+
+            entity.Status = LeaveRequestStatus.Cancelled;
+            await _context.SaveChangesAsync();
+
+            return LeaveRequestCancelResult.Success;
+        }
+
+        public async Task<LeaveRequestCancelResult> CancelAsync(int leaveRequestId)
+        {
+            var entity = await _context.LeaveRequests
+                .FirstOrDefaultAsync(lr => lr.Id == leaveRequestId);
+
+            if (entity == null)
+            {
+                return LeaveRequestCancelResult.NotFound;
             }
 
             if (entity.Status != LeaveRequestStatus.Pending)
@@ -291,6 +335,7 @@ namespace EmployeeManagement.API.Services
             {
                 Id = entity.Id,
                 EmployeeId = entity.EmployeeId,
+                EmployeeName = entity.Employee?.FullName ?? string.Empty,
                 LeaveType = entity.LeaveType,
                 StartDate = DateOnly.FromDateTime(entity.StartDate),
                 EndDate = DateOnly.FromDateTime(entity.EndDate),
@@ -298,6 +343,7 @@ namespace EmployeeManagement.API.Services
                 Status = entity.Status,
                 RequestedAt = entity.RequestedAt,
                 ReviewedByUserId = entity.ReviewedByUserId,
+                ReviewedByUserName = entity.ReviewedByUser?.Username,
                 ReviewedAt = entity.ReviewedAt,
                 ReviewNote = entity.ReviewNote
             };

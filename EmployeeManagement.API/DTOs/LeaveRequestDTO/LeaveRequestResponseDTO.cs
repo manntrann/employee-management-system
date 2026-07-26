@@ -7,6 +7,8 @@ namespace EmployeeManagement.API.DTOs.LeaveRequestDTO
         public int Id { get; set; }
 
         public int EmployeeId { get; set; }
+
+        public string EmployeeName { get; set; } = string.Empty;
         
         public LeaveType LeaveType { get; set; }
         
@@ -21,6 +23,8 @@ namespace EmployeeManagement.API.DTOs.LeaveRequestDTO
         public DateTime RequestedAt { get; set; }
         
         public int? ReviewedByUserId { get; set; }
+
+        public string? ReviewedByUserName { get; set; }
         
         public DateTime? ReviewedAt { get; set; }
         

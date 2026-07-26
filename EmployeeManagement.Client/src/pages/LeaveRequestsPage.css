@@ -1,0 +1,19 @@
+.leave-request-form {
+  grid-template-columns: repeat(4, minmax(140px, 1fr));
+}
+
+.reject-panel {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 16px;
+  border: 1px solid #fedf89;
+  border-radius: 8px;
+  background: #fffbeb;
+}
+
+@media (max-width: 980px) {
+  .leave-request-form {
+    grid-template-columns: 1fr;
+  }
+}

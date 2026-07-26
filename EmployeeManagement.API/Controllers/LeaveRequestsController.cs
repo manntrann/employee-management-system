@@ -55,6 +55,35 @@ namespace EmployeeManagement.API.Controllers
             };
         }
 
+        [Authorize(Roles = "Admin,Manager")]
+        [HttpPost("for-employee")]
+        public async Task<IActionResult> CreateForEmployee(LeaveRequestCreateForEmployeeDTO dto)
+        {
+            var outcome = await _leaveRequestService.CreateForEmployeeAsync(dto.EmployeeId, dto);
+
+            return outcome.Result switch
+            {
+                LeaveRequestCreateResult.Created => Ok(outcome.LeaveRequest),
+                LeaveRequestCreateResult.InvalidDateRange => BadRequest(new ErrorResponseDTO
+                {
+                    Message = "End date must be on or after start date."
+                }),
+                LeaveRequestCreateResult.NoEmployeeProfile => BadRequest(new ErrorResponseDTO
+                {
+                    Message = "Employee profile was not found."
+                }),
+                LeaveRequestCreateResult.OverlappingLeave => Conflict(new ErrorResponseDTO
+                {
+                    Message = "Leave dates overlap with an existing pending or approved request."
+                }),
+                LeaveRequestCreateResult.InsufficientBalance => Conflict(new ErrorResponseDTO
+                {
+                    Message = "Insufficient leave balance for the requested dates."
+                }),
+                _ => BadRequest(new ErrorResponseDTO { Message = "Unable to create leave request." })
+            };
+        }
+
         [HttpGet("mine")]
         public async Task<IActionResult> GetMine()
         {
@@ -103,7 +132,9 @@ namespace EmployeeManagement.API.Controllers
                 return Unauthorized(new ErrorResponseDTO { Message = "Invalid token." });
             }
 
-            var result = await _leaveRequestService.CancelMineAsync(userId.Value, id);
+            var result = User.IsInRole("Admin") || User.IsInRole("Manager")
+                ? await _leaveRequestService.CancelAsync(id)
+                : await _leaveRequestService.CancelMineAsync(userId.Value, id);
 
             return result switch
             {
