@@ -20,9 +20,12 @@ namespace EmployeeManagement.API.Services
 
         public async Task<string?> LoginAsync(LoginDTO request)
         {
-            var user = await _context.Users
+            var employee = await _context.Employees
+                .Include(x => x.User)
                 .FirstOrDefaultAsync(x =>
                     x.Email != null && x.Email == request.Email);
+
+            var user = employee?.User;
 
             if (user == null || !_passwordHasher.Verify(request.Password, user.PasswordHash))
             {

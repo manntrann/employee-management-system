@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EmployeeManagement.API.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,Manager")]
     [ApiController]
     [Route("api/users")]
     public class UserController : ControllerBase
@@ -49,7 +49,7 @@ namespace EmployeeManagement.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, UserDTO dto)
+        public async Task<IActionResult> Update(int id, UserUpdateDTO dto)
         {
             var updated = await _userService.Update(id, dto);
 

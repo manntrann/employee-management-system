@@ -112,6 +112,30 @@ namespace EmployeeManagement.API.Tests.Integration
             context.Users.AddRange(adminUser, managerUser, employeeUser);
             context.SaveChanges();
 
+            var adminEmployee = new Employee
+            {
+                FullName = "System Admin",
+                Email = adminUser.Email,
+                Position = "Administrator",
+                Salary = 0,
+                Phone = "0000000001",
+                DepartmentId = department.Id,
+                UserId = adminUser.Id,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            var managerEmployee = new Employee
+            {
+                FullName = "Team Manager",
+                Email = managerUser.Email,
+                Position = "Manager",
+                Salary = 5000,
+                Phone = "0000000002",
+                DepartmentId = department.Id,
+                UserId = managerUser.Id,
+                CreatedAt = DateTime.UtcNow
+            };
+
             var employee = new Employee
             {
                 FullName = "Test Employee",
@@ -124,18 +148,25 @@ namespace EmployeeManagement.API.Tests.Integration
                 CreatedAt = DateTime.UtcNow
             };
 
-            context.Employees.Add(employee);
+            context.Employees.AddRange(adminEmployee, managerEmployee, employee);
             context.SaveChanges();
 
-            context.LeaveBalances.Add(new LeaveBalance
-            {
-                EmployeeId = employee.Id,
-                Year = DateTime.UtcNow.Year,
-                AnnualAllowance = 12,
-                SickAllowance = 5
-            });
+            var year = DateTime.UtcNow.Year;
+            context.LeaveBalances.AddRange(
+                CreateBalance(adminEmployee.Id, year),
+                CreateBalance(managerEmployee.Id, year),
+                CreateBalance(employee.Id, year));
 
             context.SaveChanges();
         }
+
+        private static LeaveBalance CreateBalance(int employeeId, int year) =>
+            new()
+            {
+                EmployeeId = employeeId,
+                Year = year,
+                AnnualAllowance = 12,
+                SickAllowance = 5
+            };
     }
 }
