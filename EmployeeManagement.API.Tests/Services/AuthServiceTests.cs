@@ -14,12 +14,24 @@ namespace EmployeeManagement.API.Tests.Services
             await using var context = CreateContext();
             var passwordHasher = new PasswordHasher();
 
-            context.Users.Add(new User
+            var department = new Department { Name = "Engineering" };
+            var user = new User
             {
                 Username = "admin",
                 Email = "admin@example.com",
                 PasswordHash = passwordHasher.Hash("Admin123!"),
                 Role = "Admin"
+            };
+            context.Departments.Add(department);
+            context.Users.Add(user);
+            await context.SaveChangesAsync();
+            context.Employees.Add(new Employee
+            {
+                FullName = "Admin Employee",
+                Email = user.Email,
+                DepartmentId = department.Id,
+                UserId = user.Id,
+                CreatedAt = DateTime.UtcNow
             });
             await context.SaveChangesAsync();
 
@@ -40,12 +52,24 @@ namespace EmployeeManagement.API.Tests.Services
             await using var context = CreateContext();
             var passwordHasher = new PasswordHasher();
 
-            context.Users.Add(new User
+            var department = new Department { Name = "Engineering" };
+            var user = new User
             {
                 Username = "admin",
                 Email = "admin@example.com",
                 PasswordHash = passwordHasher.Hash("Admin123!"),
                 Role = "Admin"
+            };
+            context.Departments.Add(department);
+            context.Users.Add(user);
+            await context.SaveChangesAsync();
+            context.Employees.Add(new Employee
+            {
+                FullName = "Admin Employee",
+                Email = user.Email,
+                DepartmentId = department.Id,
+                UserId = user.Id,
+                CreatedAt = DateTime.UtcNow
             });
             await context.SaveChangesAsync();
 
