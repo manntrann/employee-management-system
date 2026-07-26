@@ -1,0 +1,15 @@
+.page-title {
+  margin-bottom: 22px;
+}
+
+.page-title h1 {
+  margin: 18px 0 8px;
+  color: #101828;
+  font-size: clamp(30px, 4vw, 44px);
+  line-height: 1.05;
+  letter-spacing: 0;
+}
+
+.page-title p {
+  color: #667085;
+}

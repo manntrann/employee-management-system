@@ -1,0 +1,7 @@
+.empty-state {
+  display: grid;
+  place-items: center;
+  min-height: 140px;
+  color: #667085;
+  text-align: center;
+}

@@ -1,0 +1,23 @@
+.toast {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 20;
+  max-width: min(420px, calc(100vw - 36px));
+  border-radius: 8px;
+  padding: 12px 14px;
+  color: #ffffff;
+  box-shadow: 0 16px 38px rgba(15, 23, 42, 0.16);
+}
+
+.toast.success {
+  background: #117a55;
+}
+
+.toast.error {
+  background: #b42318;
+}
+
+.toast.info {
+  background: #245b9e;
+}
