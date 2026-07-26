@@ -1,0 +1,47 @@
+.login-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background:
+    linear-gradient(135deg, rgba(12, 74, 110, 0.9), rgba(31, 97, 141, 0.72)),
+    url("../assets/hero.png") center / 360px no-repeat,
+    #e7eef4;
+}
+
+.login-panel {
+  width: min(440px, 100%);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.96);
+  padding: 34px;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.24);
+}
+
+.login-panel h1 {
+  margin: 18px 0 8px;
+  color: #101828;
+  line-height: 1.05;
+  letter-spacing: 0;
+}
+
+.login-panel p {
+  color: #667085;
+}
+
+.form-stack {
+  display: grid;
+  gap: 14px;
+  margin-top: 28px;
+}
+
+.check-row {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-weight: 550;
+}
+
+.check-row input {
+  width: auto;
+  min-height: auto;
+}
