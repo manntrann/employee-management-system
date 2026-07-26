@@ -24,6 +24,12 @@ namespace EmployeeManagement.API.DTOs.EmployeeDTO
         public int DepartmentId { get; set; }
 
         [Range(1, int.MaxValue)]
-        public int UserId { get; set; }
+        public int? UserId { get; set; }
+
+        [MinLength(6)]
+        public string? Password { get; set; }
+
+        [StringLength(50)]
+        public string? Role { get; set; }
     }
 }

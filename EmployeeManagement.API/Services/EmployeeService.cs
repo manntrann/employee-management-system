@@ -9,10 +9,12 @@ namespace EmployeeManagement.API.Services
     public class EmployeeService : IEmployeeService
     {
         private readonly AppDbContext _context;
+        private readonly IPasswordHasher _passwordHasher;
 
-        public EmployeeService(AppDbContext context)
+        public EmployeeService(AppDbContext context, IPasswordHasher passwordHasher)
         {
             _context = context;
+            _passwordHasher = passwordHasher;
         }
 
         public async Task<object> GetAll(int page, int pageSize, string? search)
@@ -27,6 +29,7 @@ namespace EmployeeManagement.API.Services
 
             var query = _context.Employees
                .Include(x => x.Department)
+               .Include(x => x.User)
                .AsNoTracking()
                .AsQueryable();
 
@@ -52,7 +55,11 @@ namespace EmployeeManagement.API.Services
                    Position = x.Position,
                    Salary = x.Salary,
                    Phone = x.Phone,
+                   DepartmentId = x.DepartmentId,
                    DepartmentName = x.Department.Name,
+                   UserId = x.UserId,
+                   UserName = x.User.Username,
+                   Role = x.User.Role,
                    CreatedAt = x.CreatedAt
                })
                 .ToListAsync();
@@ -64,6 +71,7 @@ namespace EmployeeManagement.API.Services
         {
             return await _context.Employees
             .Include(x => x.Department)
+            .Include(x => x.User)
             .Where(x => x.Id == id)
             .Select(x => new EmployeeResponseDTO
             {
@@ -73,7 +81,11 @@ namespace EmployeeManagement.API.Services
                 Position = x.Position,
                 Salary = x.Salary,
                 Phone = x.Phone,
+                DepartmentId = x.DepartmentId,
                 DepartmentName = x.Department.Name,
+                UserId = x.UserId,
+                UserName = x.User.Username,
+                Role = x.User.Role,
                 CreatedAt = x.CreatedAt
             })
             .FirstOrDefaultAsync();
@@ -81,24 +93,41 @@ namespace EmployeeManagement.API.Services
 
         public async Task<Employee?> Create(EmployeeDTO dto)
         {
+            var departmentExists = await _context.Departments.AnyAsync(x => x.Id == dto.DepartmentId);
+            var email = dto.Email?.Trim();
+            var role = string.IsNullOrWhiteSpace(dto.Role) ? "Employee" : dto.Role.Trim();
+
+            if (!departmentExists ||
+                string.IsNullOrWhiteSpace(email) ||
+                string.IsNullOrWhiteSpace(dto.Password) ||
+                await _context.Users.AnyAsync(x => x.Email == email))
+            {
+                return null;
+            }
+
+            var user = new User
+            {
+                Username = dto.FullName.Trim(),
+                Email = email,
+                PasswordHash = _passwordHasher.Hash(dto.Password),
+                Role = role
+            };
+
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+
             var employee = new Employee
             {
                 FullName = dto.FullName,
-                Email = dto.Email,
+                Email = email,
                 Position = dto.Position,
                 Salary = dto.Salary,
                 Phone = dto.Phone,
                 DepartmentId = dto.DepartmentId,
-                UserId = dto.UserId,
+                UserId = user.Id,
                 CreatedAt = DateTime.UtcNow
             };
-            var departmentExists = await _context.Departments.AnyAsync(x => x.Id == dto.DepartmentId);
-            var userExits = await _context.Users.AnyAsync(x => x.Id == dto.UserId);
 
-            if (!departmentExists || !userExits)
-            {
-                return null;
-            }
             _context.Employees.Add(employee);
 
             await _context.SaveChangesAsync();
@@ -113,19 +142,46 @@ namespace EmployeeManagement.API.Services
             if (employee == null)
                 return false;
             var departmentExists = await _context.Departments.AnyAsync(x => x.Id == dto.DepartmentId);
-            var userExits = await _context.Users.AnyAsync(x => x.Id == dto.UserId);
+            var user = await _context.Users.FindAsync(dto.UserId ?? employee.UserId);
 
-            if (!departmentExists || !userExits)
+            if (!departmentExists || user == null)
             {
                 return false;
             }
+
+            var email = dto.Email?.Trim();
+            if (!string.IsNullOrWhiteSpace(email))
+            {
+                var emailUsed = await _context.Users.AnyAsync(x => x.Email == email && x.Id != user.Id);
+                if (emailUsed)
+                {
+                    return false;
+                }
+            }
+
             employee.FullName = dto.FullName;
-            employee.Email = dto.Email;
+            employee.Email = email;
             employee.Position = dto.Position;
             employee.Salary = dto.Salary;
             employee.Phone = dto.Phone;
             employee.DepartmentId = dto.DepartmentId;
-            employee.UserId = dto.UserId;
+            employee.UserId = user.Id;
+
+            user.Username = dto.FullName.Trim();
+            if (!string.IsNullOrWhiteSpace(email))
+            {
+                user.Email = email;
+            }
+
+            if (!string.IsNullOrWhiteSpace(dto.Role))
+            {
+                user.Role = dto.Role.Trim();
+            }
+
+            if (!string.IsNullOrWhiteSpace(dto.Password))
+            {
+                user.PasswordHash = _passwordHasher.Hash(dto.Password);
+            }
 
             await _context.SaveChangesAsync();
 

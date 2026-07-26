@@ -39,6 +39,7 @@ namespace EmployeeManagement.API.Controllers
             return Ok(employee);
         }
 
+        [Authorize(Roles = "Admin,Manager")]
         [HttpPost]
         public async Task<IActionResult> CreateEmployee(EmployeeDTO dto)
         {
@@ -55,6 +56,7 @@ namespace EmployeeManagement.API.Controllers
                 employee);
         }
 
+        [Authorize(Roles = "Admin,Manager")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateEmployee(int id, EmployeeDTO dto)
         {
@@ -68,6 +70,7 @@ namespace EmployeeManagement.API.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "Admin,Manager")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEmployee(int id)
         {
