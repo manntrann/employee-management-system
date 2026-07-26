@@ -30,7 +30,7 @@ namespace EmployeeManagement.API.Tests.Services
             });
             await context.SaveChangesAsync();
 
-            var service = new EmployeeService(context);
+            var service = CreateService(context);
 
             var result = await service.GetAll(page: 0, pageSize: 0, search: null);
             var parsed = ParseGetAllResult(result);
@@ -56,7 +56,7 @@ namespace EmployeeManagement.API.Tests.Services
             });
             await context.SaveChangesAsync();
 
-            var service = new EmployeeService(context);
+            var service = CreateService(context);
 
             var result = await service.GetAll(page: 1, pageSize: 500, search: null);
             var parsed = ParseGetAllResult(result);
@@ -89,7 +89,7 @@ namespace EmployeeManagement.API.Tests.Services
                 });
             await context.SaveChangesAsync();
 
-            var service = new EmployeeService(context);
+            var service = CreateService(context);
 
             var result = await service.GetAll(page: 1, pageSize: 10, search: "alice");
             var parsed = ParseGetAllResult(result);
@@ -103,7 +103,7 @@ namespace EmployeeManagement.API.Tests.Services
         public async Task Create_ReturnsNull_WhenDepartmentOrUserMissing()
         {
             await using var context = CreateContext();
-            var service = new EmployeeService(context);
+            var service = CreateService(context);
 
             var created = await service.Create(new EmployeeDTO
             {
@@ -139,7 +139,7 @@ namespace EmployeeManagement.API.Tests.Services
             context.Employees.AddRange(older, newer);
             await context.SaveChangesAsync();
 
-            var service = new EmployeeService(context);
+            var service = CreateService(context);
             var payload = await service.GetAll(page: 1, pageSize: 10, search: null);
 
             // payload is anonymous; verify via re-query using same ordering contract
@@ -169,6 +169,9 @@ namespace EmployeeManagement.API.Tests.Services
             await context.SaveChangesAsync();
             return (dept, user);
         }
+
+        private static EmployeeService CreateService(Data.AppDbContext context) =>
+            new(context, new PasswordHasher());
 
         private static (int total, int page, int pageSize, List<EmployeeResponseDTO> data) ParseGetAllResult(
             object result)
