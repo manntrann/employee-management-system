@@ -70,7 +70,7 @@ namespace EmployeeManagement.API.Services
             };
         }
 
-        public async Task<bool> Update(int id, UserDTO dto)
+        public async Task<bool> Update(int id, UserUpdateDTO dto)
         {
             var user = await _context.Users.FindAsync(id);
 
@@ -81,7 +81,10 @@ namespace EmployeeManagement.API.Services
 
             user.Username = dto.Username;
             user.Email = dto.Email;
-            user.PasswordHash = _passwordHasher.Hash(dto.Password);
+            if (!string.IsNullOrWhiteSpace(dto.Password))
+            {
+                user.PasswordHash = _passwordHasher.Hash(dto.Password);
+            }
             user.Role = dto.Role;
 
             await _context.SaveChangesAsync();

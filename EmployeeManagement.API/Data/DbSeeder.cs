@@ -16,93 +16,104 @@ namespace EmployeeManagement.API.Data
             var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             var passwordHasher = scope.ServiceProvider.GetRequiredService<IPasswordHasher>();
 
-            if (await context.Users.AnyAsync())
+            var department = await context.Departments.FirstOrDefaultAsync(x => x.Name == "Engineering");
+            if (department == null)
+            {
+                department = new Department { Name = "Engineering" };
+                context.Departments.Add(department);
+                await context.SaveChangesAsync();
+            }
+
+            var admin = await EnsureUserAsync(context, passwordHasher, "admin", "admin@example.com", "Admin123!", "Admin");
+            var manager = await EnsureUserAsync(context, passwordHasher, "manager", "manager@example.com", "Manager123!", "Manager");
+            var employeeUser = await EnsureUserAsync(context, passwordHasher, "employee", "employee@example.com", "Employee123!", "Employee");
+
+            var adminEmployee = await EnsureEmployeeAsync(context, department.Id, admin, "System Admin", "Administrator", 0);
+            var managerEmployee = await EnsureEmployeeAsync(context, department.Id, manager, "Team Manager", "Manager", 5000);
+            var employee = await EnsureEmployeeAsync(context, department.Id, employeeUser, "Test Employee", "Developer", 3000);
+
+            var year = DateTime.UtcNow.Year;
+            await EnsureBalanceAsync(context, adminEmployee.Id, year);
+            await EnsureBalanceAsync(context, managerEmployee.Id, year);
+            await EnsureBalanceAsync(context, employee.Id, year);
+        }
+
+        private static async Task<User> EnsureUserAsync(
+            AppDbContext context,
+            IPasswordHasher passwordHasher,
+            string username,
+            string email,
+            string password,
+            string role)
+        {
+            var user = await context.Users.FirstOrDefaultAsync(x => x.Email == email);
+            if (user != null)
+            {
+                return user;
+            }
+
+            user = new User
+            {
+                Username = username,
+                Email = email,
+                PasswordHash = passwordHasher.Hash(password),
+                Role = role
+            };
+
+            context.Users.Add(user);
+            await context.SaveChangesAsync();
+
+            return user;
+        }
+
+        private static async Task<Employee> EnsureEmployeeAsync(
+            AppDbContext context,
+            int departmentId,
+            User user,
+            string fullName,
+            string position,
+            decimal salary)
+        {
+            var employee = await context.Employees.FirstOrDefaultAsync(x => x.UserId == user.Id);
+            if (employee != null)
+            {
+                return employee;
+            }
+
+            employee = new Employee
+            {
+                FullName = fullName,
+                Email = user.Email,
+                Position = position,
+                Salary = salary,
+                DepartmentId = departmentId,
+                UserId = user.Id,
+                CreatedAt = DateTime.UtcNow
+            };
+
+            context.Employees.Add(employee);
+            await context.SaveChangesAsync();
+
+            return employee;
+        }
+
+        private static async Task EnsureBalanceAsync(AppDbContext context, int employeeId, int year)
+        {
+            var exists = await context.LeaveBalances.AnyAsync(x => x.EmployeeId == employeeId && x.Year == year);
+            if (exists)
             {
                 return;
             }
 
-            var department = new Department { Name = "Engineering" };
-            context.Departments.Add(department);
-
-            var admin = new User
-            {
-                Username = "admin",
-                Email = "admin@example.com",
-                PasswordHash = passwordHasher.Hash("Admin123!"),
-                Role = "Admin"
-            };
-
-            var manager = new User
-            {
-                Username = "manager",
-                Email = "manager@example.com",
-                PasswordHash = passwordHasher.Hash("Manager123!"),
-                Role = "Manager"
-            };
-
-            var employeeUser = new User
-            {
-                Username = "employee",
-                Email = "employee@example.com",
-                PasswordHash = passwordHasher.Hash("Employee123!"),
-                Role = "Employee"
-            };
-
-            context.Users.AddRange(admin, manager, employeeUser);
-            await context.SaveChangesAsync();
-
-            var adminEmployee = new Employee
-            {
-                FullName = "System Admin",
-                Email = admin.Email,
-                Position = "Administrator",
-                Salary = 0,
-                DepartmentId = department.Id,
-                UserId = admin.Id,
-                CreatedAt = DateTime.UtcNow
-            };
-
-            var managerEmployee = new Employee
-            {
-                FullName = "Team Manager",
-                Email = manager.Email,
-                Position = "Manager",
-                Salary = 5000,
-                DepartmentId = department.Id,
-                UserId = manager.Id,
-                CreatedAt = DateTime.UtcNow
-            };
-
-            var employee = new Employee
-            {
-                FullName = "Test Employee",
-                Email = employeeUser.Email,
-                Position = "Developer",
-                Salary = 3000,
-                DepartmentId = department.Id,
-                UserId = employeeUser.Id,
-                CreatedAt = DateTime.UtcNow
-            };
-
-            context.Employees.AddRange(adminEmployee, managerEmployee, employee);
-            await context.SaveChangesAsync();
-
-            var year = DateTime.UtcNow.Year;
-            context.LeaveBalances.AddRange(
-                CreateBalance(adminEmployee.Id, year),
-                CreateBalance(managerEmployee.Id, year),
-                CreateBalance(employee.Id, year));
-
-            await context.SaveChangesAsync();
-        }
-
-        private static LeaveBalance CreateBalance(int employeeId, int year) =>
-            new()
+            context.LeaveBalances.Add(new LeaveBalance
             {
                 EmployeeId = employeeId,
                 Year = year,
                 AnnualAllowance = DefaultAnnualAllowance,
                 SickAllowance = DefaultSickAllowance
-            };
+            });
+
+            await context.SaveChangesAsync();
+        }
     }
 }

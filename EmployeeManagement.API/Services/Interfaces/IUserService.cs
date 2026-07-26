@@ -11,7 +11,7 @@ namespace EmployeeManagement.API.Services.Interfaces
 
         Task<UserResponseDTO> Create(UserDTO dto);
 
-        Task<bool> Update(int id, UserDTO dto);
+        Task<bool> Update(int id, UserUpdateDTO dto);
 
         Task<UserDeleteResult> Delete(int id);
     }
