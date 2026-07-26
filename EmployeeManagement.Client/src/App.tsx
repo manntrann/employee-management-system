@@ -44,7 +44,7 @@ function App() {
               <DashboardLayout session={session} signOut={signOut}>
                 <Routes>
                   <Route index element={<Navigate to="/dashboard" replace />} />
-                  <Route path="dashboard" element={<DashboardPage />} />
+                  <Route path="dashboard" element={<DashboardPage api={api} session={session} />} />
                   <Route path="employees" element={<EmployeesPage api={api} session={session} notify={notify} />} />
                   <Route path="departments" element={<DepartmentsPage api={api} session={session} notify={notify} />} />
                   <Route path="departments/:id" element={<DepartmentDetailPage api={api} session={session} />} />
