@@ -1,0 +1,138 @@
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 18px;
+  margin-bottom: 18px;
+}
+
+.panel-heading,
+.summary-strip {
+  display: flex;
+  align-items: center;
+}
+
+.panel-heading {
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.panel-heading h3 {
+  margin: 0;
+}
+
+.panel-heading span {
+  color: #0b4f71;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.insight-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.insight-grid article {
+  border: 1px solid #eaecf0;
+  border-radius: 8px;
+  padding: 14px;
+  background: #f9fafb;
+}
+
+.insight-grid span,
+.distribution-row span {
+  color: #667085;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.insight-grid strong {
+  display: block;
+  margin: 8px 0 4px;
+  color: #101828;
+  font-size: 20px;
+}
+
+.insight-grid p {
+  margin: 0;
+  color: #667085;
+}
+
+.department-distribution {
+  display: grid;
+  gap: 12px;
+}
+
+.distribution-row {
+  display: grid;
+  grid-template-columns: minmax(140px, 0.8fr) minmax(160px, 1.2fr);
+  gap: 12px;
+  align-items: center;
+}
+
+.distribution-row strong {
+  display: block;
+  color: #101828;
+}
+
+.distribution-track {
+  height: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #eef2f6;
+}
+
+.distribution-track i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: #12b76a;
+}
+
+.summary-strip {
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.summary-strip span {
+  border-radius: 999px;
+  background: #f2f4f7;
+  color: #344054;
+  padding: 7px 10px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.leave-status-strip span:nth-child(1) {
+  background: #fef0c7;
+  color: #93370d;
+}
+
+.leave-status-strip span:nth-child(2) {
+  background: #dcfae6;
+  color: #067647;
+}
+
+.leave-status-strip span:nth-child(3) {
+  background: #fee4e2;
+  color: #b42318;
+}
+
+@media (max-width: 980px) {
+  .metric-grid,
+  .dashboard-grid,
+  .insight-grid,
+  .distribution-row {
+    grid-template-columns: 1fr;
+  }
+}
