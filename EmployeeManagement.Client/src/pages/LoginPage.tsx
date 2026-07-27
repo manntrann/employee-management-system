@@ -1,7 +1,7 @@
 import type { FormEvent } from 'react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { API_BASE_URL } from '../config/apiConfig'
+import { API_BASE_URL, REMEMBERED_EMAIL_KEY } from '../config/apiConfig'
 import type { Toast } from '../types/toast'
 import './LoginPage.css'
 
@@ -12,7 +12,7 @@ type LoginPageProps = {
 
 export function LoginPage({ onLogin, notify }: LoginPageProps) {
   const navigate = useNavigate()
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState(() => localStorage.getItem(REMEMBERED_EMAIL_KEY) ?? '')
   const [password, setPassword] = useState('')
   const [remember, setRemember] = useState(true)
   const [loading, setLoading] = useState(false)
@@ -34,6 +34,11 @@ export function LoginPage({ onLogin, notify }: LoginPageProps) {
       }
 
       onLogin(body.token, remember)
+      if (remember) {
+        localStorage.setItem(REMEMBERED_EMAIL_KEY, email)
+      } else {
+        localStorage.removeItem(REMEMBERED_EMAIL_KEY)
+      }
       navigate('/dashboard')
     } catch (error) {
       notify({
@@ -54,11 +59,11 @@ export function LoginPage({ onLogin, notify }: LoginPageProps) {
         <form onSubmit={submit} className="form-stack">
           <label>
             Email
-            <input value={email} onChange={(event) => setEmail(event.target.value)} type="email" required />
+            <input value={email} onChange={(event) => setEmail(event.target.value)} type="email" autoComplete="email" required />
           </label>
           <label>
             Password
-            <input value={password} onChange={(event) => setPassword(event.target.value)} type="password" required />
+            <input value={password} onChange={(event) => setPassword(event.target.value)} type="password" autoComplete="current-password" required />
           </label>
           <label className="check-row">
             <input checked={remember} onChange={(event) => setRemember(event.target.checked)} type="checkbox" />
