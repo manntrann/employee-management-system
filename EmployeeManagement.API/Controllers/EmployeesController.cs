@@ -3,6 +3,8 @@ using EmployeeManagement.API.DTOs.EmployeeDTO;
 using EmployeeManagement.API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace EmployeeManagement.API.Controllers
 {
@@ -12,10 +14,12 @@ namespace EmployeeManagement.API.Controllers
     public class EmployeesController : Controller
     {
         private readonly IEmployeeService _employeeService;
+        private readonly IJwtService _jwtService;
 
-        public EmployeesController(IEmployeeService employeeService)
+        public EmployeesController(IEmployeeService employeeService, IJwtService jwtService)
         {
             _employeeService = employeeService;
+            _jwtService = jwtService;
         }
 
         [HttpGet]
@@ -60,11 +64,19 @@ namespace EmployeeManagement.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateEmployee(int id, EmployeeDTO dto)
         {
+            var currentUserId = GetCurrentUserId();
             var updated = await _employeeService.Update(id, dto);
 
             if (!updated)
             {
                 return NotFound(new ErrorResponseDTO { Message = "Employee, department, or user not found." });
+            }
+
+            var employee = await _employeeService.GetById(id);
+            if (employee != null && currentUserId == employee.UserId)
+            {
+                var token = _jwtService.GenerateToken(employee.UserId, employee.Email ?? string.Empty, employee.Role);
+                return Ok(new { token });
             }
 
             return NoContent();
@@ -82,6 +94,15 @@ namespace EmployeeManagement.API.Controllers
             }
 
             return NoContent();
+        }
+
+        private int? GetCurrentUserId()
+        {
+            var idValue =
+                User.FindFirstValue(ClaimTypes.NameIdentifier) ??
+                User.FindFirstValue(JwtRegisteredClaimNames.Sub);
+
+            return int.TryParse(idValue, out var id) ? id : null;
         }
     }
 }

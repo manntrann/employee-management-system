@@ -10,8 +10,12 @@ type EmployeeFormProps = {
   departments: Department[]
   positionOptions: string[]
   notify: (toast: Toast) => void
-  onSaved: () => void
+  onSaved: (token?: string) => void
   editingEmployee?: Employee | null
+}
+
+type EmployeeUpdateResult = {
+  token?: string
 }
 
 const emptyForm = {
@@ -71,22 +75,26 @@ export function EmployeeForm({
 
     try {
       if (editingEmployee) {
-        await api<void>(`/api/employees/${editingEmployee.id}`, {
+        const result = await api<EmployeeUpdateResult | void>(`/api/employees/${editingEmployee.id}`, {
           method: 'PUT',
           body: JSON.stringify(payload),
         })
+        const token = result && 'token' in result ? result.token : undefined
+
+        onSaved(token)
       } else {
         await api<Employee>('/api/employees', {
           method: 'POST',
           body: JSON.stringify(payload),
         })
+
+        onSaved()
       }
 
       notify({
         tone: 'success',
         message: editingEmployee ? 'Employee updated.' : 'Employee and login account created.',
       })
-      onSaved()
     } catch (error) {
       notify({
         tone: 'error',
