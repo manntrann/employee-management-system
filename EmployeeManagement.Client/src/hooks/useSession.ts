@@ -21,11 +21,16 @@ export function useSession() {
     setSession(decoded)
   }, [])
 
+  const refreshSession = useCallback((token: string) => {
+    const remember = localStorage.getItem(TOKEN_KEY) !== null
+    saveSession(token, remember)
+  }, [saveSession])
+
   const signOut = useCallback(() => {
     localStorage.removeItem(TOKEN_KEY)
     sessionStorage.removeItem(TOKEN_KEY)
     setSession(null)
   }, [])
 
-  return { session, saveSession, signOut }
+  return { session, saveSession, refreshSession, signOut }
 }

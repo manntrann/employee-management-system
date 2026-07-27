@@ -12,9 +12,10 @@ type EmployeesPageProps = {
   api: ApiClient
   session: Session
   notify: (toast: Toast) => void
+  refreshSession: (token: string) => void
 }
 
-export function EmployeesPage({ api, session, notify }: EmployeesPageProps) {
+export function EmployeesPage({ api, session, notify, refreshSession }: EmployeesPageProps) {
   const [employees, setEmployees] = useState<Employee[]>([])
   const [departments, setDepartments] = useState<Department[]>([])
   const [search, setSearch] = useState('')
@@ -93,7 +94,11 @@ export function EmployeesPage({ api, session, notify }: EmployeesPageProps) {
           positionOptions={positionOptions}
           notify={notify}
           editingEmployee={editingEmployee}
-          onSaved={() => {
+          onSaved={(token) => {
+            if (token) {
+              refreshSession(token)
+            }
+
             setEditingEmployee(null)
             setShowForm(false)
             load()

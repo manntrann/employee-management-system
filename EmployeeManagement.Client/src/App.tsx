@@ -14,7 +14,7 @@ import { MyLeavePage } from './pages/MyLeavePage'
 import type { Toast } from './types/toast'
 
 function App() {
-  const { session, saveSession, signOut } = useSession()
+  const { session, saveSession, refreshSession, signOut } = useSession()
   const [toast, setToast] = useState<Toast | null>(null)
   const api = useApi(session, signOut)
 
@@ -45,7 +45,7 @@ function App() {
                 <Routes>
                   <Route index element={<Navigate to="/dashboard" replace />} />
                   <Route path="dashboard" element={<DashboardPage api={api} session={session} />} />
-                  <Route path="employees" element={<EmployeesPage api={api} session={session} notify={notify} />} />
+                  <Route path="employees" element={<EmployeesPage api={api} session={session} notify={notify} refreshSession={refreshSession} />} />
                   <Route path="departments" element={<DepartmentsPage api={api} session={session} notify={notify} />} />
                   <Route path="departments/:id" element={<DepartmentDetailPage api={api} session={session} />} />
                   <Route path="my-leave" element={<MyLeavePage api={api} notify={notify} />} />
