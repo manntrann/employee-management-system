@@ -35,7 +35,7 @@ namespace EmployeeManagement.API.Tests.Services
             });
             await context.SaveChangesAsync();
 
-            var service = new AuthService(context, new StubJwtService(), passwordHasher);
+            var service = new AuthService(context, new StubJwtService(), passwordHasher, new StubEmailService());
 
             var token = await service.LoginAsync(new LoginDTO
             {
@@ -73,7 +73,7 @@ namespace EmployeeManagement.API.Tests.Services
             });
             await context.SaveChangesAsync();
 
-            var service = new AuthService(context, new StubJwtService(), passwordHasher);
+            var service = new AuthService(context, new StubJwtService(), passwordHasher, new StubEmailService());
 
             var token = await service.LoginAsync(new LoginDTO
             {
@@ -94,6 +94,14 @@ namespace EmployeeManagement.API.Tests.Services
             public System.Security.Claims.ClaimsPrincipal? GetPrincipalFromExpiredToken(string token)
             {
                 return null;
+            }
+        }
+
+        private class StubEmailService : IEmailService
+        {
+            public Task SendAsync(string to, string subject, string body)
+            {
+                return Task.CompletedTask;
             }
         }
     }

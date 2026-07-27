@@ -10,6 +10,8 @@ namespace EmployeeManagement.API.Models
 
         public string PasswordHash { get; set; } = string.Empty;
 
+        public string? TemporaryPasswordHash { get; set; }
+
         public string Role { get; set; } = string.Empty;
     }
 }
