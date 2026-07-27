@@ -15,8 +15,13 @@ export function useSession() {
 
     if (!decoded) throw new Error('Token is invalid.')
 
-    if (remember) localStorage.setItem(TOKEN_KEY, token)
-    else sessionStorage.setItem(TOKEN_KEY, token)
+    if (remember) {
+      sessionStorage.removeItem(TOKEN_KEY)
+      localStorage.setItem(TOKEN_KEY, token)
+    } else {
+      localStorage.removeItem(TOKEN_KEY)
+      sessionStorage.setItem(TOKEN_KEY, token)
+    }
 
     setSession(decoded)
   }, [])
