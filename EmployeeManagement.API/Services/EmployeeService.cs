@@ -46,22 +46,8 @@ namespace EmployeeManagement.API.Services
                 .OrderByDescending(x => x.CreatedAt)
                 .ThenByDescending(x => x.Id)
                 .Skip((page - 1) * pageSize)
-                .Take(pageSize)
-               .Select(x => new EmployeeResponseDTO
-               {
-                   Id = x.Id,
-                   FullName = x.FullName,
-                   Email = x.Email,
-                   Position = x.Position,
-                   Salary = x.Salary,
-                   Phone = x.Phone,
-                   DepartmentId = x.DepartmentId,
-                   DepartmentName = x.Department.Name,
-                   UserId = x.UserId,
-                   UserName = x.User.Username,
-                   Role = x.User.Role,
-                   CreatedAt = x.CreatedAt
-               })
+               .Take(pageSize)
+               .Select(x => ToResponse(x))
                 .ToListAsync();
 
             return new { total, page, pageSize, data };
@@ -73,22 +59,18 @@ namespace EmployeeManagement.API.Services
             .Include(x => x.Department)
             .Include(x => x.User)
             .Where(x => x.Id == id)
-            .Select(x => new EmployeeResponseDTO
-            {
-                Id = x.Id,
-                FullName = x.FullName,
-                Email = x.Email,
-                Position = x.Position,
-                Salary = x.Salary,
-                Phone = x.Phone,
-                DepartmentId = x.DepartmentId,
-                DepartmentName = x.Department.Name,
-                UserId = x.UserId,
-                UserName = x.User.Username,
-                Role = x.User.Role,
-                CreatedAt = x.CreatedAt
-            })
+            .Select(x => ToResponse(x))
             .FirstOrDefaultAsync();
+        }
+
+        public async Task<EmployeeResponseDTO?> GetByUserId(int userId)
+        {
+            return await _context.Employees
+                .Include(x => x.Department)
+                .Include(x => x.User)
+                .Where(x => x.UserId == userId)
+                .Select(x => ToResponse(x))
+                .FirstOrDefaultAsync();
         }
 
         public async Task<Employee?> Create(EmployeeDTO dto)
@@ -188,6 +170,43 @@ namespace EmployeeManagement.API.Services
             return true;
         }
 
+        public async Task<EmployeeResponseDTO?> UpdateProfile(int userId, EmployeeProfileUpdateDTO dto)
+        {
+            var employee = await _context.Employees
+                .Include(x => x.Department)
+                .Include(x => x.User)
+                .FirstOrDefaultAsync(x => x.UserId == userId);
+
+            if (employee?.User == null)
+            {
+                return null;
+            }
+
+            var email = dto.Email.Trim();
+            var emailUsed = await _context.Users.AnyAsync(x => x.Email == email && x.Id != employee.UserId);
+            if (emailUsed)
+            {
+                return null;
+            }
+
+            employee.FullName = dto.FullName.Trim();
+            employee.Email = email;
+            employee.Position = dto.Position;
+            employee.Phone = dto.Phone;
+
+            employee.User.Username = employee.FullName;
+            employee.User.Email = email;
+
+            if (!string.IsNullOrWhiteSpace(dto.Password))
+            {
+                employee.User.PasswordHash = _passwordHasher.Hash(dto.Password);
+            }
+
+            await _context.SaveChangesAsync();
+
+            return ToResponse(employee);
+        }
+
         public async Task<bool> Delete(int id)
         {
             var employee = await _context.Employees.FindAsync(id);
@@ -200,6 +219,25 @@ namespace EmployeeManagement.API.Services
             await _context.SaveChangesAsync();
 
             return true;
+        }
+
+        private static EmployeeResponseDTO ToResponse(Employee employee)
+        {
+            return new EmployeeResponseDTO
+            {
+                Id = employee.Id,
+                FullName = employee.FullName,
+                Email = employee.Email,
+                Position = employee.Position,
+                Salary = employee.Salary,
+                Phone = employee.Phone,
+                DepartmentId = employee.DepartmentId,
+                DepartmentName = employee.Department.Name,
+                UserId = employee.UserId,
+                UserName = employee.User.Username,
+                Role = employee.User.Role,
+                CreatedAt = employee.CreatedAt
+            };
         }
     }
 }

@@ -11,6 +11,7 @@ type DashboardLayoutProps = {
 
 const navItems: Array<[string, string, Role[]]> = [
   ['Dashboard', '/dashboard', ['Admin', 'Manager', 'Employee']],
+  ['My Profile', '/profile', ['Admin', 'Manager', 'Employee']],
   ['Employees', '/employees', ['Admin', 'Manager', 'Employee']],
   ['Departments', '/departments', ['Admin', 'Manager']],
   ['My Leave', '/my-leave', ['Admin', 'Manager', 'Employee']],

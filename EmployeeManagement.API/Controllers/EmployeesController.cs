@@ -30,7 +30,44 @@ namespace EmployeeManagement.API.Controllers
             return Ok(employees);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("myprofile")]
+        public async Task<IActionResult> GetMyProfile()
+        {
+            var currentUserId = GetCurrentUserId();
+            if (currentUserId == null)
+            {
+                return Unauthorized(new ErrorResponseDTO { Message = "Invalid token." });
+            }
+
+            var employee = await _employeeService.GetByUserId(currentUserId.Value);
+            if (employee == null)
+            {
+                return NotFound(new ErrorResponseDTO { Message = "Employee profile not found." });
+            }
+
+            return Ok(employee);
+        }
+
+        [HttpPut("myprofile")]
+        public async Task<IActionResult> UpdateMyProfile(EmployeeProfileUpdateDTO dto)
+        {
+            var currentUserId = GetCurrentUserId();
+            if (currentUserId == null)
+            {
+                return Unauthorized(new ErrorResponseDTO { Message = "Invalid token." });
+            }
+
+            var employee = await _employeeService.UpdateProfile(currentUserId.Value, dto);
+            if (employee == null)
+            {
+                return NotFound(new ErrorResponseDTO { Message = "Employee profile not found or email is already used." });
+            }
+
+            var token = _jwtService.GenerateToken(employee.UserId, employee.Email ?? string.Empty, employee.Role);
+            return Ok(new { employee, token });
+        }
+
+        [HttpGet("{id:int}")]
         public async Task<IActionResult> GetEmployeeById(int id)
         {
             var employee = await _employeeService.GetById(id);
