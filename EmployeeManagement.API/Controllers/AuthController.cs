@@ -34,5 +34,16 @@ namespace EmployeeManagement.API.Controllers
                 token
             });
         }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordDTO request)
+        {
+            await _authService.ForgotPasswordAsync(request);
+
+            return Ok(new
+            {
+                message = "If the email exists, a temporary password has been sent."
+            });
+        }
     }
 }
